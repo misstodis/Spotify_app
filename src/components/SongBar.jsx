@@ -1,9 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { IoMdTrash } from "react-icons/io";
 
 import PlayPause from './PlayPause';
 
-const SongBar = ({ song, i, artistId, isPlaying, activeSong, handlePauseClick, handlePlayClick }) => {
+const SongBar = ({ song, i, artistId, isPlaying, isUserPlaylist, activeSong, handlePauseClick, handlePlayClick, handleDeleteSong }) => {
   return (
     <div className={`w-full flex flex-row items-center hover:bg-[#4c426e] ${activeSong?.title === song?.title ? 'bg-[#4c426e]' : 'bg-transparent'} py-2 p-4 rounded-lg cursor-pointer mb-2`}>
       <h3 className="font-bold text-base text-white mr-3">{i + 1}.</h3>
@@ -41,6 +42,15 @@ const SongBar = ({ song, i, artistId, isPlaying, activeSong, handlePauseClick, h
           />
         )
         : null}
+
+      {/* if using for user playlist */}
+      {
+        isUserPlaylist ? (
+          <IoMdTrash className='text-gray-300 w-5 h-auto ml-3 hover:text-[#39fed0]'
+            onClick={() => handleDeleteSong(song.songId)}
+          />
+        ) : null
+      }
     </div>
   );
 }

@@ -6,8 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { getSongsFromPlaylist } from "../services/playlist";
 import TopChartCard from "../components/TopPlay/TopChartCard";
 import { db } from "../firebase/firebase-config.js";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { collection, deleteDoc, doc, onSnapshot, query } from "firebase/firestore";
 import { playPause, setActiveSong } from "../redux/features/playerSlice";
+import SongBar from "../components/SongBar";
+import { info } from "autoprefixer";
+import { async } from "@firebase/util";
 
 
 function ListSongs() {
@@ -23,8 +26,10 @@ function ListSongs() {
     useEffect(() => {
         let subsc;
         subsc = onSnapshot(query(collection(db, "Playlists", listid, "songs")), (snapshot) => {
-            setData(snapshot.docs.map((doc) => (doc.data())));
-            console.log(snapshot);
+            // loop docs toget the songid and songs
+            // using detructuring to set sonngid and song data to a object  
+            // after that store the object to useState data
+            setData(snapshot.docs.map((doc) => ({ songId: doc.id, ...doc.data() })));
         })
     }, [])
 
@@ -42,6 +47,16 @@ function ListSongs() {
         dispatch(playPause(true));
     };
 
+    // handle detelte song in firebase
+    const handleDeleteSong = (songId) => {
+        const deltete = async () => {
+            if (user.userName) {
+                await deleteDoc(doc(db, "Playlists", listid, "songs", songId))
+            }
+        }
+        deltete()
+    }
+
 
     return (
         <>
@@ -49,7 +64,7 @@ function ListSongs() {
                 {user.userSelectedPlaylist}
             </h2>
             {
-                data.map((song, i) => <TopChartCard
+                data.map((song, i) => <SongBar
                     key={song?.key}
                     song={song}
                     i={i}
@@ -57,6 +72,8 @@ function ListSongs() {
                     activeSong={activeSong}
                     handlePauseClick={handlePauseClick}
                     handlePlayClick={() => handlePlayClick(song, i)}
+                    handleDeleteSong={handleDeleteSong}
+                    isUserPlaylist={true}
                 />)
             }
 
