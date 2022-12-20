@@ -14,8 +14,13 @@ function ModalAddPlaylist({ user, open, handleOpen, handleClose }) {
     const handleAddPlaylist = (playlistName, user) => {
         // check if user is already login
         if (user.userId !== "") {
-            addPlaylistToFireBase(playlistName, user);
-            setPlaylistName("");
+            // add playlist to firebase
+            addPlaylistToFireBase(playlistName, user).then(() => {
+                handleClose();
+                setPlaylistName("");
+                return;
+            });
+
         } else {
             Swal.fire({
                 title: "Opps...you need to login first!",

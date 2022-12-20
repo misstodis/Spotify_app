@@ -7,25 +7,30 @@ import { useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { addSongToPlaylist } from '../../services/playlist';
 
-function ModalUserPLaylists({ open, user, song, handleClose }) {
+function ModalUserPLaylists({ open, user, song, handleCloseModal }) {
     const userLists = user.userPlaylists;
     const [playlistId, setPlaylistId] = useState("");
 
-    const handleAddsongToPlaylist = (playlistId, songInfo) => {
+    const handleAddsongToPlaylist = (playlistId) => {
         let id = playlistId;
+
         //check if user not select any playlist
         // then set auto the first list
         if (id == "") {
             id = userLists[0].listId
         }
-        addSongToPlaylist(id, songInfo)
+        //adding song to playlist
+        //after adding song to playlist then close modal
+        addSongToPlaylist(id, song).then(() => {
+            handleCloseModal();
+        })
     }
     return (
         <>
             <Modal
                 keepMounted
                 open={open}
-                onClose={handleClose}
+                onClose={handleCloseModal}
                 aria-labelledby="keep-mounted-modal-title"
                 aria-describedby="keep-mounted-modal-description"
                 className="flex justify-center items-center"
@@ -42,7 +47,8 @@ function ModalUserPLaylists({ open, user, song, handleClose }) {
                     </select>
                     <button
                         className='bg-[#39FED0] p-2 mt-2 rounded-md'
-                        onClick={() => handleAddsongToPlaylist(playlistId, song)}
+                        // when clicked save run function handleAddsongToPlaylist and store an listId in
+                        onClick={() => handleAddsongToPlaylist(playlistId)}
                     >
                         Save
                     </button>

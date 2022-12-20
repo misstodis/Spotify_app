@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import PlayPause from "./PlayPause";
 import { playPause, setActiveSong } from "../redux/features/playerSlice";
-import { getUserPlaylists } from "../services/playlist";
 import ModalUserPLaylists from "./Modal/ModalUserPLaylists";
 import { useState } from "react";
 import Swal from "sweetalert2";
@@ -27,6 +26,7 @@ const SongCard = ({ song, isPlaying, activeSong, data, i, handleOpenModal }) => 
     // set play song to true to play the song
     dispatch(playPause(true));
   };
+
 
 
   return (
@@ -58,10 +58,16 @@ const SongCard = ({ song, isPlaying, activeSong, data, i, handleOpenModal }) => 
           </Link>
         </p>
         <div className="w-full flex justify-end">
-          <AiOutlineHeart className="w-5 h-5 text-white hover:text-[#39FED0]"
-            // send song information to the modal
-            onClick={() => handleOpenModal(song)}
-          />
+          {
+            song?.isInList ?
+              <AiFillHeart className="w-5 h-5 text-[#39FED0] hover:text-white" />
+              :
+              <AiOutlineHeart className="w-5 h-5 text-white hover:text-[#39FED0]"
+                // send song information to the modal
+                onClick={() => handleOpenModal(song)}
+              />
+          }
+
         </div>
       </div>
     </div>

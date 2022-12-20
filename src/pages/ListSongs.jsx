@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getSongsFromPlaylist } from "../services/playlist";
 import TopChartCard from "../components/TopPlay/TopChartCard";
 import { db } from "../firebase/firebase-config.js";
 import { collection, deleteDoc, doc, onSnapshot, query } from "firebase/firestore";
@@ -31,6 +30,8 @@ function ListSongs() {
             // after that store the object to useState data
             setData(snapshot.docs.map((doc) => ({ songId: doc.id, ...doc.data() })));
         })
+
+        return subsc;
     }, [])
 
     //function when user c  lick on pause , then send to change sat on reducer in playerSlice.js

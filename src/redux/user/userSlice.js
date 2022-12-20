@@ -7,7 +7,7 @@ const initialState = {
   userImage: '',
   useremail: '',
   userPlaylists: [],
-  userSongs: [],
+  userAllSongsOfLists: [],
   userSelectedPlaylist: '',
 };
 
@@ -22,17 +22,11 @@ const UserSlice = createSlice({
       sate.userImage = action.payload.photoURL;
       sate.userEmail = action.payload.email;
     },
-    setEmptyUser: (sate, action) => {
-      sate.userId = '';
-      sate.userName = '';
-      sate.userImage = '';
-      sate.userEmail = '';
+    setEmptyUser: (state, action) => {
+      state = initialState;
     },
     setUserPlayLists: (state, action) => {
-      return {
-        ...state,
-        userPlaylists: [...state.userPlaylists, ...action.payload],
-      };
+      state.userPlaylists = action.payload;
     },
 
     setUserSong: (state, action) => {
@@ -42,9 +36,14 @@ const UserSlice = createSlice({
     setSelectedPlaylist: (state, action) => {
       state.userSelectedPlaylist = action.payload;
     },
+
+    setAllSongsOfTheLists: (state, action) => {
+      state.userAllSongsOfLists = action.payload;
+    },
   },
 });
 
-export const { setLogedUser, setEmptyUser, setUserPlayLists, setUserSong, setSelectedPlaylist } = UserSlice.actions;
+export const { setLogedUser, setEmptyUser, setUserPlayLists, setUserSong, setSelectedPlaylist, setAllSongsOfTheLists } =
+  UserSlice.actions;
 
 export default UserSlice.reducer;

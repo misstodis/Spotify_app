@@ -4,25 +4,25 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 
 import { Searchbar, Sidebar, MusicPlayer, TopPlay } from './components';
-import { ArtistDetails, TopArtists, AroundYou, Discover, Search, SongDetails, TopCharts, Login, Playlist, ListSongs } from './pages';
+import { ArtistDetails, TopArtists, AroundYou, Discover, Search, SongDetails, Login, Playlist, ListSongs } from './pages';
 
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase/firebase-config.js";
-import { setLogedUser, setUserPlayLists } from './redux/user/userSlice';
-import { getUserPlaylists } from './services/playlist';
-
+import { auth, db } from "./firebase/firebase-config.js";
+import { setAllSongsOfTheLists, setLogedUser, setUserPlayLists } from './redux/user/userSlice';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
+// import { getAllSongsOfUserPlaylists } from './services/playlist';
 
 const App = () => {
   const dispatch = useDispatch();
   //get state player from redux and store it in activeSong
   const { activeSong } = useSelector((state) => state.player);
+  const user = useSelector((state) => state.user);
 
-  // get current user from redux
-  const currentUser = useSelector((state) => state.user);
 
-  // console.log(currentUser);
-  // useffect to track the authentication , if something change in auth then
+
+  // useffect to track the authentication and database, if something changethen
   // save inloged user and user playlist to redux
+  // and get playlist of user 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       // if there user inloged
@@ -37,18 +37,44 @@ const App = () => {
         // set state user in redux
         dispatch(setLogedUser(userInfo));
 
-        // get playlist of user after inloged, this will return a promise
-        const playlist = getUserPlaylists(user.uid);
-        //get response from promise
-        playlist.then((res) => {
-          console.log(res);
-          // send and save playlist to redux
-          dispatch(setUserPlayLists(res));
-        })
+        // get user playlist
+        let subcs;
+        // define a query to get all playlist depend on userid
+        const q = query(collection(db, 'Playlists'), where('userId', '==', user.uid));
+        // after get user playlist depend on userid
+        // then save it in redux 
+        subcs = onSnapshot(q, (snapshot) => {
+          // dispatch userplaylist to redux
+          dispatch(
+            setUserPlayLists(snapshot.docs.map((doc) => ({ ...doc.data(), listId: doc.id })))
+          )
+        });
+
+
+        return subcs;
       }
     });
-  }, [auth])
+  }, [auth, db])
 
+  useEffect(() => {
+    const lists = user.userPlaylists
+    if (lists.length > 0) {
+      lists.map((list) => {
+        const q = query(collection(db, 'Playlists', list.listId, 'songs'));
+        // after get user playlist depend on userid
+        // then save it in redux
+        onSnapshot(q, (snapshot) => {
+
+          dispatch(
+            setAllSongsOfTheLists(
+              snapshot.docs.map((doc) => ({ ...doc.data(), listId: doc.id }))
+            )
+          );
+        });
+      })
+    }
+
+  }, [user.userPlaylists])
 
   return (
     <div className="relative flex">
@@ -61,7 +87,6 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Discover />} />
               <Route path="/top-artists" element={<TopArtists />} />
-              <Route path="/top-charts" element={<TopCharts />} />
               <Route path="/around-you" element={<AroundYou />} />
               <Route path="/artists/:id" element={<ArtistDetails />} />
               <Route path="/songs/:songid" element={<SongDetails />} />

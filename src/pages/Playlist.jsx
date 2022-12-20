@@ -1,17 +1,19 @@
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { doc, updateDoc, deleteDoc, query, where, collection, onSnapshot, startAfter } from "firebase/firestore";
 
 import { AiOutlineEdit } from "react-icons/ai"
-import { setSelectedPlaylist } from "../redux/user/userSlice";
+import { setSelectedPlaylist, setUserPlayLists } from "../redux/user/userSlice";
 import ModalEditPLaylist from "../components/Modal/ModalEditPLaylist";
 import { db } from "../firebase/firebase-config.js";
 
 function Playlist() {
     const dispatch = useDispatch();
+    // get user from redux
     const user = useSelector((state) => state.user);
+    //get userplaylist in user after get user from redux
     const playlists = user.userPlaylists;
 
     const [openEditModal, setOpenEditModal] = useState(false)
@@ -67,7 +69,7 @@ function Playlist() {
             <h2 className="font-bold text-3xl text-white text-left mt-4 mb-10">Your Playlist</h2>
 
             {playlists.map(playlist => (
-                <div className='flex flex-wrap sm:justify-start justify-center gap-8' key={playlist.name}>
+                <div className='flex flex-wrap sm:justify-start justify-center gap-8' key={playlist.listId}>
                     <div className="w-full flex flex-row items-center hover:bg-[#4c426e] py-2 p-4 rounded-lg cursor-pointer mb-2">
                         <h3 className="font-bold text-base text-white mr-3 ">
                             #
@@ -79,7 +81,7 @@ function Playlist() {
                         </Link>
                         {/* icon */}
                         <AiOutlineEdit
-                            className="w-5 h-auto hover:text-[#39fed0]"
+                            className="text-gray-300 w-5 h-auto hover:text-[#39fed0]"
                             onClick={() => handleOpenModal(playlist?.listId, playlist?.name)}
                         />
                     </div>

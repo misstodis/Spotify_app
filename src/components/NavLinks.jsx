@@ -63,16 +63,6 @@ function NavLinks({ handleClick }) {
                 Top Artists
             </NavLink>
 
-            <NavLink
-                className={`flex flex-row justify-start items-center my-8 text-sm font-medium text-gray-400 hover:text-[#39fed0]
-                    ${activeNav === 'top-charts' && "text-[#39fed0]"}
-                `}
-                to="/top-charts"
-                onClick={() => { setActiveNav("top-charts") }}
-            >
-                <HiOutlineHashtag className="w-6 h-6 mr-2" />
-                Top Charts
-            </NavLink>
             <div className='flex justify-start items-center my-8 text-sm font-medium text-gray-400'>
                 <NavLink
                     className={` flex ${activeNav === 'play-list' && "text-[#39fed0]"} hover:text-[#39fed0]`}
