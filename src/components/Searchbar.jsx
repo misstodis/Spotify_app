@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Soundrecorder from "soundrecorder";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-import { storage } from "../firebase/firebase-config.js";
+import { auth, storage } from "../firebase/firebase-config.js";
 import shazamSongRecognize from "../services/songRecognize.js";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../services/logout";
@@ -16,9 +16,10 @@ import Swal from 'sweetalert2'
 import Tippy from '@tippyjs/react';
 import Tooltip from '@mui/material/Tooltip';
 
-import Fade from '@mui/material/Fade';
+
 import { FaMicrophone, FaUserAstronaut } from "react-icons/fa";
 import { FiLogOut, FiSearch } from "react-icons/fi";
+import { signOut } from "firebase/auth";
 
 
 // query get song recongnize
@@ -89,11 +90,17 @@ const Searchbar = () => {
   }
 
   const handleLogout = () => {
-    logout()
-      .then(() => {
-        // set sate of user in redux empty
-        dispatch(setEmptyUser(""));
+    signOut(auth).then(() => {
+      // set sate of user in redux empty
+      dispatch(setEmptyUser(""));
+    }).catch((error) => {
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong, please try again later !",
+        showConfirmButton: true
       })
+    })
+
   }
 
   return (

@@ -8,8 +8,11 @@ import { playPause, setActiveSong } from "../redux/features/playerSlice";
 import ModalUserPLaylists from "./Modal/ModalUserPLaylists";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { db } from "../firebase/firebase-config.js";
+import { deleteDoc, query } from "firebase/firestore";
+import { DeleteSongInPlaylist } from "../services/playlist";
 
-const SongCard = ({ song, isPlaying, activeSong, data, i, handleOpenModal }) => {
+const SongCard = ({ song, isPlaying, activeSong, data, i, handleOpenModal, currentUser }) => {
   // create a dispatch to send sate and action to reducer
   const dispatch = useDispatch();
 
@@ -27,7 +30,20 @@ const SongCard = ({ song, isPlaying, activeSong, data, i, handleOpenModal }) => 
     dispatch(playPause(true));
   };
 
+  // delete song in playlist when on heart icon cliked 
+  const handleRemoveSongInPlaylist = (listId, songId) => {
+    DeleteSongInPlaylist(currentUser, listId, songId).then((res) => {
+      console.log(res);
+    }).catch((erorr) => {
+      Swal.fire({
+        title: `error ${erorr}`,
+        icon: "error",
+        text: "something went wrong , please try again later!",
+        showConfirmButton: true,
+      })
+    })
 
+  }
 
   return (
     <div className="flex flex-col w-[250px] p-4 bg-white/5 bg-opacity-80 backdrop-blur-sm animate-slideup rounded-lg cursor-pointer">
@@ -60,14 +76,16 @@ const SongCard = ({ song, isPlaying, activeSong, data, i, handleOpenModal }) => 
         <div className="w-full flex justify-end">
           {
             song?.isInList ?
-              <AiFillHeart className="w-5 h-5 text-[#39FED0] hover:text-white" />
+              <AiFillHeart
+                className="w-5 h-5 text-[#39FED0] hover:text-white"
+                onClick={() => handleRemoveSongInPlaylist(song.listId, song.songId)}
+              />
               :
               <AiOutlineHeart className="w-5 h-5 text-white hover:text-[#39FED0]"
                 // send song information to the modal
                 onClick={() => handleOpenModal(song)}
               />
           }
-
         </div>
       </div>
     </div>

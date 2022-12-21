@@ -10,6 +10,7 @@ import { playPause, setActiveSong } from "../redux/features/playerSlice";
 import SongBar from "../components/SongBar";
 import { info } from "autoprefixer";
 import { async } from "@firebase/util";
+import { DeleteSongInPlaylist } from "../services/playlist";
 
 
 function ListSongs() {
@@ -50,12 +51,7 @@ function ListSongs() {
 
     // handle detelte song in firebase
     const handleDeleteSong = (songId) => {
-        const deltete = async () => {
-            if (user.userName) {
-                await deleteDoc(doc(db, "Playlists", listid, "songs", songId))
-            }
-        }
-        deltete()
+        DeleteSongInPlaylist(user, listid, songId)
     }
 
 

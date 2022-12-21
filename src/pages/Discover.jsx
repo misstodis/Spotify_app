@@ -27,40 +27,32 @@ const Discover = () => {
 
     useEffect(() => {
         if (data?.length > 0 && allSongInLists.length > 0) {
+            // clone songs this get from API
             let datas = [...data];
-            // for (const d of data) {
-            //     let dIndex = allSongInLists?.findIndex((a) => a.title == d.title);
-            //     if (dIndex > -1 && !d?.isInList) {
-            //         const newdata = {
-            //             ...d,
-            //             isInList: true,
-            //         };
-            //         datas?.splice(dIndex, 1, newdata);
-            //         // console.log(newdata);
-            //     }
-            // }
-            // console.log("runEffect");
-            // console.log(datas);
-
+            // loop all the song from the playlist 
             for (const songInlist of allSongInLists) {
+                //  if items in song list from api have the same title with the song in list
+                //  then return the position index of the item in the song list from API
                 let sIndex = datas?.findIndex((d) => d.title == songInlist.title);
+                // check if found something (that mean we have the index)
                 if (sIndex > -1) {
+                    // create new data (a object with + new items "isInlist")
                     const newdata = {
                         ...songInlist,
                         isInList: true,
                     };
-
+                    // after have index position of the items in array and new data then replace it with new object 
                     datas?.splice(sIndex, 1, newdata);
                 }
             }
             setFilterData(datas);
 
         }
+        // if user dont have any songs in the playlist, then just show the normal list
         if (allSongInLists.length === 0) {
             setFilterData(data);
         }
     }, [data, allSongInLists]);
-
 
     // ====== check API before redender page=============
     //check if data from API is fetching 

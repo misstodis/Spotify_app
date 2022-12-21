@@ -9,7 +9,7 @@ import { ArtistDetails, TopArtists, AroundYou, Discover, Search, SongDetails, Lo
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "./firebase/firebase-config.js";
 import { setAllSongsOfTheLists, setLogedUser, setUserPlayLists } from './redux/user/userSlice';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, onSnapshot, orderBy, query, where } from 'firebase/firestore';
 // import { getAllSongsOfUserPlaylists } from './services/playlist';
 
 const App = () => {
@@ -58,16 +58,16 @@ const App = () => {
 
   useEffect(() => {
     const lists = user.userPlaylists
+
     if (lists.length > 0) {
       lists.map((list) => {
         const q = query(collection(db, 'Playlists', list.listId, 'songs'));
         // after get user playlist depend on userid
         // then save it in redux
         onSnapshot(q, (snapshot) => {
-
           dispatch(
             setAllSongsOfTheLists(
-              snapshot.docs.map((doc) => ({ ...doc.data(), listId: doc.id }))
+              snapshot.docs.map((doc) => ({ ...doc.data(), songId: doc.id, listId: list.listId }))
             )
           );
         });
