@@ -11,5 +11,6 @@ export const store = configureStore({
     user: userReducer,
     [shazamCoreApi.reducerPath]: shazamCoreApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(shazamCoreApi.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }).concat(shazamCoreApi.middleware),
 });

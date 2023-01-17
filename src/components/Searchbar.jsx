@@ -60,6 +60,8 @@ const Searchbar = () => {
         center top 
         no-repeat
       `
+    }).then(({ dismiss }) => {
+      if (dismiss == "cancel") recorder.stop();
     })
 
     // console.log(Swal.getCloseButton());
@@ -123,7 +125,7 @@ const Searchbar = () => {
           />
           <FaMicrophone
             className="hover:text-[#39fed0] ml-3 w-4 h-4 mr-2 cursor-pointer"
-            onClick={() => handleRecorder}
+            onClick={() => handleRecorder()}
           />
         </div>
       </form>

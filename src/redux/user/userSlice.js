@@ -23,6 +23,7 @@ const UserSlice = createSlice({
       sate.userEmail = action.payload.email;
     },
     setEmptyUser: (state, action) => {
+      console.log(initialState);
       state = initialState;
     },
     setUserPlayLists: (state, action) => {
